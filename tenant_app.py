@@ -1,26 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-Tenant Rent Prediction Web App (Cloud-ready)
+Tenant Rent Prediction Web App (Cloud-ready, joblib only)
 Author: GODSON
 """
 
 import streamlit as st
 import pandas as pd
 import os
-import pickle
+import joblib
 
 # -------------------------------
 def load_model():
-    """Load the ML model (joblib preferred, fallback to pickle)."""
+    """Load the ML model (joblib only)."""
     MODEL_FILE = os.path.join(os.path.dirname(__file__), "tenant_model.joblib")
-    try:
-        import joblib
-        model = joblib.load(MODEL_FILE)
-    except ModuleNotFoundError:
-        st.warning("Joblib not found. Falling back to pickle.")
-        with open(MODEL_FILE, "rb") as f:
-            model = pickle.load(f)
-    return model
+    if not os.path.exists(MODEL_FILE):
+        st.error("❌ Model file not found. Please upload tenant_model.joblib.")
+        st.stop()
+    return joblib.load(MODEL_FILE)
 
 def load_history():
     """Load existing history CSV or create empty DataFrame."""
